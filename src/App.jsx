@@ -26,7 +26,7 @@ function App() {
         throw new Error(`Error: ${response.status}`);
       }
       const data = await response.json();
-      console.log("Fetched tasks:", data); // Log the data to see its structure
+      console.log("Fetched tasks:", data);
       setTasks(data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -55,7 +55,7 @@ function App() {
         body: JSON.stringify({
           title: newTaskTitle,
           description: newTaskDescription,
-          category: "To-Do", // Using category instead of status to match backend
+          category: "To-Do",
         }),
       });
 
@@ -169,108 +169,110 @@ function App() {
   const doneTasks = tasks.filter((task) => task.category === "Done");
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">
-        Task Management App
-      </h1>
+    <>
+      <div className="p-4 max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">
+          Task Management App
+        </h1>
 
-      {error && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative"
-          role="alert"
-        >
-          <span className="block sm:inline">{error}</span>
-          <button
-            className="absolute top-0 bottom-0 right-0 px-4 py-3"
-            onClick={() => setError(null)}
+        {error && (
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 relative"
+            role="alert"
           >
-            <span className="sr-only">Close</span>
-            <span aria-hidden="true">&times;</span>
+            <span className="block sm:inline">{error}</span>
+            <button
+              className="absolute top-0 bottom-0 right-0 px-4 py-3"
+              onClick={() => setError(null)}
+            >
+              <span className="sr-only">Close</span>
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        )}
+
+        {isCreatingTask ? (
+          <div className="mb-6 p-4 bg-white rounded-lg shadow border border-gray-200">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Task Title
+              </label>
+              <input
+                type="text"
+                placeholder="Enter task title"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Task Description
+              </label>
+              <textarea
+                placeholder="Enter task description"
+                value={newTaskDescription}
+                onChange={(e) => setNewTaskDescription(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="3"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setIsCreatingTask(false)}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createTask}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={loading}
+              >
+                {loading ? "Creating..." : "Create Task"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsCreatingTask(true)}
+            className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            + Add New Task
           </button>
-        </div>
-      )}
+        )}
 
-      {isCreatingTask ? (
-        <div className="mb-6 p-4 bg-white rounded-lg shadow border border-gray-200">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Task Title
-            </label>
-            <input
-              type="text"
-              placeholder="Enter task title"
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="flex flex-col md:flex-row gap-4">
+            <TaskList
+              title="To-Do"
+              tasks={todoTasks}
+              onUpdate={updateTask}
+              onDelete={deleteTask}
+            />
+            <TaskList
+              title="In Progress"
+              tasks={inProgressTasks}
+              onUpdate={updateTask}
+              onDelete={deleteTask}
+            />
+            <TaskList
+              title="Done"
+              tasks={doneTasks}
+              onUpdate={updateTask}
+              onDelete={deleteTask}
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Task Description
-            </label>
-            <textarea
-              placeholder="Enter task description"
-              value={newTaskDescription}
-              onChange={(e) => setNewTaskDescription(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="3"
-            />
-          </div>
-          <div className="flex justify-end space-x-2">
-            <button
-              onClick={() => setIsCreatingTask(false)}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-              disabled={loading}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={createTask}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
-            >
-              {loading ? "Creating..." : "Create Task"}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <button
-          onClick={() => setIsCreatingTask(true)}
-          className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          + Add New Task
-        </button>
-      )}
+        </DragDropContext>
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex flex-col md:flex-row gap-4">
-          <TaskList
-            title="To-Do"
-            tasks={todoTasks}
-            onUpdate={updateTask}
-            onDelete={deleteTask}
-          />
-          <TaskList
-            title="In Progress"
-            tasks={inProgressTasks}
-            onUpdate={updateTask}
-            onDelete={deleteTask}
-          />
-          <TaskList
-            title="Done"
-            tasks={doneTasks}
-            onUpdate={updateTask}
-            onDelete={deleteTask}
-          />
-        </div>
-      </DragDropContext>
-
-      {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg">Loading...</div>
-        </div>
-      )}
-    </div>
+        {loading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
+            <div className="bg-white p-4 rounded-lg shadow-lg">Loading...</div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
