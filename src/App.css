@@ -1,0 +1,43 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+body {
+  background-color: #f5f7fa;
+  color: #333;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading {
+  animation: pulse 1.5s infinite;
+}
+
+/* Improve accessibility for focus states */
+*:focus {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .task-container {
+    flex-direction: column;
+  }
+
+  .task-list {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
